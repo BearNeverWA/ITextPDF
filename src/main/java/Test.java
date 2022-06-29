@@ -23,13 +23,8 @@ import java.io.*;
 public class Test {
 
     public static void main(String[] args) {
-        String filePath = "C:\\Users\\Leo\\Desktop\\1.pdf";
-        String imgPath = "C:\\Users\\Leo\\Desktop\\1.png";
-        String outPath = "C:\\Users\\Leo\\Desktop\\a.pdf";
-//        addTag(filePath, imgPath, outPath);
-//        markImageByIcon(imgPath, filePath, outPath);
-        markTxt(filePath, outPath, imgPath);
-//        addMark4Word(filePath,outPath,imgPath);
+        Doc2HTML doc2HTML=new Doc2HTML();
+        doc2HTML.base64toFile(doc2HTML.doc2PDF());
     }
 
     public static void markTxt(String source, String target, String img) {
@@ -72,8 +67,6 @@ public class Test {
             e.printStackTrace();
         }
     }
-
-    public static void addMark4Word(String filePath,String )
 
 //    public static void addTag(String filePath, String imgPath, String outFilePath) {
 //        PdfReader reader = null;
