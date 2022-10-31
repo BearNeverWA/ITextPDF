@@ -23,8 +23,98 @@ import java.io.*;
 public class Test {
 
     public static void main(String[] args) {
-        Doc2HTML doc2HTML=new Doc2HTML();
-        doc2HTML.base64toFile(doc2HTML.doc2PDF());
+//        Doc2HTML doc2HTML = new Doc2HTML();
+//        doc2HTML.base64toFile(doc2HTML.doc2PDF());
+//
+//        String encodedString = "";
+//        byte[] decoder = java.util.Base64.getDecoder().decode(encodedString);
+//        InputStream is = new ByteArrayInputStream(decoder);
+        GenerateBlankTransparentImg();
+        //ImageMerge();
+    }
+
+    public static String getImageSize(String imageSource) {
+        if (imageSource != null && imageSource.length() != 0) {
+            byte[] decoder = java.util.Base64.getDecoder().decode(imageSource);
+            java.io.InputStream is = new java.io.ByteArrayInputStream(decoder);
+            try {
+                java.awt.image.BufferedImage bufferedImage = javax.imageio.ImageIO.read(is);
+                return bufferedImage.getWidth() + "," + bufferedImage.getHeight();
+            } catch (java.io.IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return "";
+    }
+
+    public static void ImageMerge() {
+        java.io.File file = new File("/Users/leojin/Desktop/1.png");
+        java.io.File file1 = new File("/Users/leojin/Desktop/1.png");
+        java.awt.image.BufferedImage[] images = new java.awt.image.BufferedImage[2];
+        try {
+            images[0] = ImageIO.read(file);
+            images[1] = ImageIO.read(file1);
+            int[][] imageArrays = new int[2][];
+
+            for (int i = 0; i < 2; i++) {
+                int width = images[i].getWidth();
+                int height = images[i].getHeight();
+                imageArrays[i] = new int[width * height];
+                imageArrays[i] = images[i].getRGB(0, 0, width, height, imageArrays[i], 0, width);
+            }
+
+            int newWidth = 0;
+            int newHeight = 0;
+            for (int i = 0; i < images.length; i++) {
+                //横向
+                newHeight = newHeight > images[i].getHeight() ? newHeight : images[i].getHeight();
+                newWidth += images[i].getWidth();
+
+                //纵向
+                //newWidth = newWidth > images[i].getWidth() ? newWidth : images[i].getWidth();
+                //newHeight += images[i].getHeight();
+            }
+
+            //横向
+            if (newWidth < 1) return;
+            //纵向
+            //if (newHeight<1) return;
+
+            BufferedImage ImageNew = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+            int width_i = 0;
+            int height_i = 0;
+            for (int i = 0; i < images.length; i++) {
+                //横向
+                ImageNew.setRGB(width_i,0,images[i].getWidth(),newHeight,imageArrays[i],0,images[i].getWidth());
+                width_i+=images[i].getWidth();
+
+                //纵向
+                //ImageNew.setRGB(0,height_i,newWidth,images[i].getHeight(),imageArrays[i],0,newWidth);
+                //height_i+=images[i].getHeight();
+            }
+            ImageIO.write(ImageNew,"png",new File("/Users/leojin/Desktop/merged.png"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void GenerateBlankTransparentImg(){
+        BufferedImage bufferedImage=new BufferedImage(300,100,BufferedImage.TYPE_INT_ARGB);
+        Graphics2D graphics2D=bufferedImage.createGraphics();
+
+        bufferedImage=graphics2D.getDeviceConfiguration().createCompatibleImage(300,100,Transparency.TRANSLUCENT);
+        graphics2D.dispose();
+        graphics2D=bufferedImage.createGraphics();
+
+        graphics2D.setColor(new Color(0,0,0,0));
+        graphics2D.setStroke(new BasicStroke(1));
+        graphics2D.drawRect(0,0,300,100);
+        graphics2D.dispose();
+        try {
+            ImageIO.write(bufferedImage,"png", new File("/Users/leojin/Desktop/blank.png"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void markTxt(String source, String target, String img) {
